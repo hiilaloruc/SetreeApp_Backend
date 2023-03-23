@@ -1,13 +1,14 @@
 import express from "express";
 import * as authMiddleware from "../middleware/authMiddleware.js";
+import * as collectionController from "../controllers/collectionController.js";
 
 const router = express.Router();
 
 router.use(authMiddleware.auth);
-router.post("/createCollection", createCollection);
-router.get("/getCollections", getCollections); // GET ALL
-router.get("/getCollection/:id", getCollection);
-router.get("/updateCollection/:id", updateCollection);
-router.get("/deleteCollection/:id", deleteCollection);
+router.post("/createCollection", collectionController.createCollection);
+router.get("/getCollections", collectionController.getCollections); // GET ALL
+router.get("/getCollection/:id", collectionController.getCollection);
+router.post("/updateCollection", collectionController.updateCollection);
+router.post("/deleteCollection", collectionController.deleteCollection);
 
 export default router;

@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import conn from "./config/database.js";
 import authRoute from "./routes/authRoute.js";
+import collectionRoute from "./routes/collectionRoute.js";
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(express.json({ extended: true })); //post requests can be separated and 
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/", authRoute);
+app.use("/", collectionRoute);
 
 app.listen(PORT, () => {
   console.log("Server listening on port " + PORT + "...");
