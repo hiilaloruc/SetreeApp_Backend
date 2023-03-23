@@ -53,7 +53,7 @@ const loginUser = async (req, res) => {
     if (same) {
       //successfully logged in
 
-      const token = createToken(user._id);
+      const token = createToken(user.id);
       res.json({
         succeeded: true,
         user,

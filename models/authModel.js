@@ -77,10 +77,9 @@ userSchema.plugin(mongoose_autoinc.autoIncrement, {
 
 userSchema.pre("save", function (next) {
   const user = this;
-  console.log("user password 1: ", user.password);
+
   bcrypt.hash(user.password, 12, (err, hash) => {
     user.password = hash;
-    console.log("user password 2: ", user.password);
     next();
   });
 });

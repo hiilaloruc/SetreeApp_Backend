@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import conn from "./config/database.js";
 import authRoute from "./routes/authRoute.js";
 import collectionRoute from "./routes/collectionRoute.js";
+import collectionItemRoute from "./routes/collectionItemRoute.js";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/", authRoute);
 app.use("/", collectionRoute);
+app.use("/", collectionItemRoute);
 
 app.listen(PORT, () => {
   console.log("Server listening on port " + PORT + "...");

@@ -10,5 +10,9 @@ router.get("/getCollections", collectionController.getCollections); // GET ALL
 router.get("/getCollection/:id", collectionController.getCollection);
 router.post("/updateCollection", collectionController.updateCollection);
 router.post("/deleteCollection", collectionController.deleteCollection);
+router.get(
+  "/getCollectionDetail/:id",
+  collectionController.getCollectionDetail
+);
 
 export default router;

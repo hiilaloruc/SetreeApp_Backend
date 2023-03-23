@@ -10,9 +10,8 @@ const collectionSchema = new Schema(
       required: true,
       trim: true,
     },
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+    userId: {
+      type: Number,
     },
     imageUrl: {
       type: String,
