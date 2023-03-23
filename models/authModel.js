@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import mongoose_autoinc from "mongoose-plugin-autoinc";
 
 const { Schema } = mongoose;
 
@@ -66,6 +67,13 @@ const userSchema = new Schema(
     timestamps: true, //mongodb automatically adds createdAt and updatedAt
   }
 );
+
+userSchema.plugin(mongoose_autoinc.autoIncrement, {
+  model: "users", //doc name on mongoose
+  field: "id",
+  startAt: 0,
+  incrementBy: 1,
+});
 
 userSchema.pre("save", function (next) {
   const user = this;
