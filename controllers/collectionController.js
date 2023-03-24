@@ -113,20 +113,37 @@ const getCollection = async (req, res) => {
   }
 };
 
+//if auth -> return success , if someone Else's collection then check isPublic
 const getCollectionDetail = async (req, res) => {
   try {
     const { id } = req.params;
-    const collection = await Collection.findOne({ id: id }, { __v: 0, _id: 0 });
-    const collectionItems = await CollectionItem.find(
-      { collectionId: id },
-      { __v: 0, _id: 0 }
-    );
+    const userId = req.user.id;
+    let collection = await Collection.aggregate([
+      { $match: { id: parseInt(id), status: "active" } },
+      { $project: { _id: 0, __v: 0 } },
+      {
+        $lookup: {
+          from: "collectionitems",
+          foreignField: "collectionId",
+          localField: "id",
+          pipeline: [{ $project: { content: 1, _id: 0 } }],
+          as: "collection",
+        },
+      },
+    ]);
 
-    res.json({
-      succeded: true,
-      collection,
-      collectionItems,
-    });
+    if (collection[0].isPublic === true || collection[0].userId === userId) {
+      res.json({
+        succeded: true,
+        collection: collection[0],
+      });
+    } else {
+      res.json({
+        succeded: false,
+        message: "Collection is not Found.",
+        collection: null,
+      });
+    }
   } catch (error) {
     res.json({
       succeded: false,
