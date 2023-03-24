@@ -11,9 +11,7 @@ GOAL RESPONSE
     "Get a certificate from any field",
     "Enroll a course - that you know nothing"
   ],
-  
 }
-
 */
 
 import Collection from "../models/collectionModel.js";
@@ -83,7 +81,7 @@ const deleteCollection = async (req, res) => {
   try {
     const { status, id } = req.body;
     const collections = await Collection.findOneAndUpdate({ id }, { status });
-    // ++ delete all collectionItem objects that belongs this collection
+    await CollectionItem.deleteMany({ collectionId: id });
     res.json({
       succeded: true,
       message: "Collection is " + status + " now!",
@@ -100,7 +98,6 @@ const getCollection = async (req, res) => {
   try {
     const { id } = req.params;
     const collection = await Collection.findOne({ id: id }, { __v: 0, _id: 0 });
-    // ++ get all collectionItem objects that belongs this collection
     res.json({
       succeded: true,
       collection,
@@ -113,7 +110,7 @@ const getCollection = async (req, res) => {
   }
 };
 
-//if auth -> return success , if someone Else's collection then check isPublic
+//if auth -> return success, if someone else's collection then check isPublic
 const getCollectionDetail = async (req, res) => {
   try {
     const { id } = req.params;
