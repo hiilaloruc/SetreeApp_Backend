@@ -52,14 +52,12 @@ const userSchema = new Schema(
     },
     followers: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "User",
+        type: Number,
       },
     ],
     followings: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "User",
+        type: Number,
       },
     ],
   },
@@ -77,7 +75,6 @@ userSchema.plugin(mongoose_autoinc.autoIncrement, {
 
 userSchema.pre("save", function (next) {
   const user = this;
-
   bcrypt.hash(user.password, 12, (err, hash) => {
     user.password = hash;
     next();

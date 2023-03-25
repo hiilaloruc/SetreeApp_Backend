@@ -5,6 +5,7 @@ import authRoute from "./routes/authRoute.js";
 import collectionRoute from "./routes/collectionRoute.js";
 import collectionItemRoute from "./routes/collectionItemRoute.js";
 import goalRoute from "./routes/goalRoute.js";
+import goalItemRoute from "./routes/goalItemRoute.js";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use("/", authRoute);
 app.use("/", collectionRoute);
 app.use("/", collectionItemRoute);
 app.use("/", goalRoute);
+app.use("/", goalItemRoute);
 
 app.listen(PORT, () => {
   console.log("Server listening on port " + PORT + "...");

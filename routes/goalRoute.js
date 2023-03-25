@@ -10,5 +10,6 @@ router.get("/getGoals", goalController.getGoals);
 router.get("/getGoal/:id", goalController.getGoal);
 router.post("/updateGoal", goalController.updateGoal);
 router.post("/deleteGoal", goalController.deleteGoal);
+router.get("/getGoalDetail/:id", goalController.getGoalDetail);
 
 export default router;

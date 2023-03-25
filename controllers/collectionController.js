@@ -38,18 +38,20 @@ const createCollection = async (req, res) => {
 };
 
 const getCollections = async (req, res) => {
+  //?status = inactive
+  //?isPublic = true
   try {
+    const isPublic = req.query.isPublic;
     const { id } = req.user;
-    console.log("req user: " + req.user);
 
-    const collections = await Collection.find(
-      { userId: id },
-      { __v: 0, _id: 0 }
-    );
+    const filter = { userId: id, status: "active" };
+    if (isPublic != null) filter.isPublic = isPublic;
+
+    const collections = await Collection.find(filter, { __v: 0, _id: 0 });
 
     res.json({
       succeeded: true,
-      collections: collections,
+      collections,
     });
   } catch (error) {
     res.json({
@@ -123,7 +125,7 @@ const getCollectionDetail = async (req, res) => {
           from: "collectionitems",
           foreignField: "collectionId",
           localField: "id",
-          pipeline: [{ $project: { content: 1, _id: 0 } }],
+          pipeline: [{ $project: { id: 1, content: 1, _id: 0 } }],
           as: "collection",
         },
       },
@@ -132,7 +134,7 @@ const getCollectionDetail = async (req, res) => {
     if (collection[0].isPublic === true || collection[0].userId === userId) {
       res.json({
         succeded: true,
-        collection: collection[0],
+        collections: collection[0],
       });
     } else {
       res.json({

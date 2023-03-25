@@ -40,9 +40,8 @@ const createGoal = async (req, res) => {
 const getGoals = async (req, res) => {
   try {
     const { id } = req.user;
-    console.log("req user: " + req.user);
-
-    const goals = await Goal.find({ userId: id }, { __v: 0, _id: 0 });
+    const filter = { userId: id, status: "active" };
+    const goals = await Goal.find(filter, { __v: 0, _id: 0 });
 
     res.json({
       succeeded: true,
@@ -78,7 +77,6 @@ const deleteGoal = async (req, res) => {
   try {
     const { status, id } = req.body;
     const goals = await Goal.findOneAndUpdate({ id }, { status });
-    //await GoalItem.deleteMany({ goalId: id });
 
     res.json({
       succeded: true,
@@ -107,5 +105,42 @@ const getGoal = async (req, res) => {
     });
   }
 };
+const getGoalDetail = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+    let goal = await Goal.aggregate([
+      { $match: { id: parseInt(id), status: "active" } },
+      { $project: { _id: 0, __v: 0 } },
+      {
+        $lookup: {
+          from: "goalitems",
+          foreignField: "goalId",
+          localField: "id",
+          pipeline: [{ $project: { content: 1, isDone: 1, id: 1, _id: 0 } }],
+          as: "goal",
+        },
+      },
+    ]);
 
-export { createGoal, getGoals, updateGoal, deleteGoal, getGoal };
+    if (goal[0].userId === userId) {
+      res.json({
+        succeded: true,
+        goals: goal[0],
+      });
+    } else {
+      res.json({
+        succeded: false,
+        message: "goal is not Found.",
+        goal: null,
+      });
+    }
+  } catch (error) {
+    res.json({
+      succeded: false,
+      error,
+    });
+  }
+};
+
+export { createGoal, getGoals, updateGoal, deleteGoal, getGoal, getGoalDetail };
