@@ -118,7 +118,7 @@ const getGoalDetail = async (req, res) => {
           foreignField: "goalId",
           localField: "id",
           pipeline: [{ $project: { content: 1, isDone: 1, id: 1, _id: 0 } }],
-          as: "goal",
+          as: "goalItems",
         },
       },
     ]);
@@ -126,7 +126,7 @@ const getGoalDetail = async (req, res) => {
     if (goal[0].userId === userId) {
       res.json({
         succeded: true,
-        goals: goal[0],
+        goal: goal[0],
       });
     } else {
       res.json({

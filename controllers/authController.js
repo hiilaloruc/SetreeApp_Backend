@@ -36,26 +36,19 @@ const loginUser = async (req, res) => {
     console.log("User Login Request Body: ", req.body);
 
     const { email, password } = req.body;
-    const user = await User.findOne(
-      { email: email },
-      { password: 0, __v: 0, _id: 0 }
-    );
-
+    const user = await User.findOne({ email: email }, { __v: 0, _id: 0 });
     let same = false;
 
-    if (user) {
-      same = await bcrypt.compare(password, user.password); //user.password is hashed version on db
-    } else {
+    if (!user) {
       return res.json({
         //return: because if no user exists why to check password ??
         succeeded: false,
         error: "No user found for this email.",
       });
     }
-
+    same = await bcrypt.compare(password, user.password); //user.password is hashed version on db
     if (same) {
       //successfully logged in
-
       const token = createToken(user.id);
       res.json({
         succeeded: true,
