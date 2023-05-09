@@ -8,11 +8,16 @@ const createUser = async (req, res) => {
     console.log("User Create Request Body: ", req.body);
     const user = await User.create(req.body);
     //const userToken = await jwt.sign({ id: user.id }, process.env.SECRET_JWT, {   expiresIn: "1h"});
-
+    const userWithoutSensitiveData = {
+      ...user.toJSON(),
+      password: undefined,
+      __v: undefined,
+      _id: undefined,
+    };
     res.json({
       succeeded: true,
       message: "User created successfully!",
-      user: user,
+      user: userWithoutSensitiveData,
       //token: userToken,
     });
   } catch (error) {
@@ -48,11 +53,15 @@ const loginUser = async (req, res) => {
     }
     same = await bcrypt.compare(password, user.password); //user.password is hashed version on db
     if (same) {
+      const userWithoutSensitiveData = {
+        ...user.toJSON(),
+        password: undefined,
+      };
       //successfully logged in
       const token = createToken(user.id);
       res.json({
         succeeded: true,
-        user,
+        user: userWithoutSensitiveData,
         token: token,
       });
     } else {
