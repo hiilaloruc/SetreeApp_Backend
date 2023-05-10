@@ -38,15 +38,17 @@ const createCollection = async (req, res) => {
 };
 
 const getCollections = async (req, res) => {
-  //?status = inactive
-  //?isPublic = true
+  //if collections owner is the person that sent the request THEN: return all collections
+  //but if collections owner is NOT the person that sent the request THEN: return only the collections that isPublic=true
   try {
-    const isPublic = req.query.isPublic;
-    const { id } = req.user;
-
+    const { id } = req.params;
+    const requestOwnerId = req.user.id;
     const filter = { userId: id, status: "active" };
-    if (isPublic != null) filter.isPublic = isPublic;
 
+    //id = collection owner id
+    if (id != requestOwnerId) {
+      filter.isPublic = true;
+    }
     const collections = await Collection.find(filter, { __v: 0, _id: 0 });
 
     res.json({

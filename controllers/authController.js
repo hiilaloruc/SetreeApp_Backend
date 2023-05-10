@@ -230,7 +230,7 @@ const getFollowings = async (req, res) => {
 
 const createToken = (userId) => {
   return jwt.sign({ userId }, process.env.SECRET_JWT, {
-    expiresIn: "1d",
+    expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
