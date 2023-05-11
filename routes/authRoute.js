@@ -5,7 +5,7 @@ import * as authMiddleware from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.json({ message: "welcome to API. v:0.2" });
+  res.json({ message: "welcome to API. v:0.3" });
 });
 
 router.post("/register", authController.createUser);

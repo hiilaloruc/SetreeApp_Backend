@@ -50,10 +50,21 @@ const getCollections = async (req, res) => {
       filter.isPublic = true;
     }
     const collections = await Collection.find(filter, { __v: 0, _id: 0 });
+    const collectionsWithCount = await Promise.all(
+      collections.map(async (collection) => {
+        const itemCount = await CollectionItem.countDocuments({
+          collectionId: collection.id,
+        });
+        return {
+          ...collection.toJSON(),
+          itemCount,
+        };
+      })
+    );
 
     res.json({
       succeeded: true,
-      collections,
+      collections: collectionsWithCount,
     });
   } catch (error) {
     res.json({
