@@ -8,7 +8,7 @@ const auth = async (req, res, next) => {
     const user = await User.findOne({ id: decoded.userId });
 
     if (!user) {
-      res.status(401).send({ error: "user not found!" });
+      res.status(401).send({ error: "User not found!" });
     }
     req.token = token;
     req.user = user;
@@ -17,7 +17,7 @@ const auth = async (req, res, next) => {
   } catch (e) {
     // User not authenticated
     res.status(401).send({
-      error: "Please authenticate.",
+      error: "Please authenticate. Log in and try again",
       message: e.message,
     });
   }

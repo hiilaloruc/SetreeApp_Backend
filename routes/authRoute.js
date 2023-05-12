@@ -5,7 +5,7 @@ import * as authMiddleware from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.json({ message: "welcome to API. v:0.3" });
+  res.json({ message: "Welcome to SETREE API. v:0.4 🚀" });
 });
 
 router.post("/register", authController.createUser);

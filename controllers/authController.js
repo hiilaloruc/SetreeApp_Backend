@@ -55,7 +55,7 @@ const loginUser = async (req, res) => {
     same = await bcrypt.compare(password, user.password); //user.password is hashed version on db
     if (same) {
       const publicCollectionsCount = await Collection.countDocuments({
-        userId: id,
+        userId: user.id,
       });
 
       const userModified = {
