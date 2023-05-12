@@ -1,4 +1,5 @@
 import User from "../models/authModel.js";
+import Collection from "../models/collectionModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -53,15 +54,20 @@ const loginUser = async (req, res) => {
     }
     same = await bcrypt.compare(password, user.password); //user.password is hashed version on db
     if (same) {
-      const userWithoutSensitiveData = {
+      const publicCollectionsCount = await Collection.countDocuments({
+        userId: id,
+      });
+
+      const userModified = {
         ...user.toJSON(),
         password: undefined,
+        listCount: publicCollectionsCount,
       };
       //successfully logged in
       const token = createToken(user.id);
       res.json({
         succeeded: true,
-        user: userWithoutSensitiveData,
+        user: userModified,
         token: token,
       });
     } else {
@@ -115,9 +121,17 @@ const updateUser = async (req, res) => {
       { firstName, lastName, username, email, gender }
     );
     const user = await User.findOne({ id }, { __v: 0, _id: 0, password: 0 });
+    const publicCollectionsCount = await Collection.countDocuments({
+      userId: id,
+    });
+    const userModified = {
+      ...user.toJSON(),
+      listCount: publicCollectionsCount,
+    };
+
     res.json({
       succeeded: true,
-      user,
+      user: userModified,
     });
   } catch (error) {
     res.json({
@@ -135,9 +149,19 @@ const getUser = async (req, res) => {
       { id: Number(id) },
       { _id: 0, __v: 0, password: 0 }
     );
+
+    const publicCollectionsCount = await Collection.countDocuments({
+      userId: id,
+    });
+
+    const userModified = {
+      ...user.toJSON(),
+      listCount: publicCollectionsCount,
+    };
+
     res.json({
       succeeded: true,
-      user,
+      user: userModified,
     });
   } catch (error) {
     res.json({
@@ -199,10 +223,25 @@ const getFollowers = async (req, res) => {
     const followers = user.followers;
     const followerObjects = await User.find(
       { id: { $in: followers } },
-      { __v: 0, _id: 0, followers: 0, followings: 0, password: 0 }
+      { __v: 0, _id: 0, password: 0 }
     );
 
-    res.json({ succeeded: true, followerObjects });
+    const followerObjectsWithListCount = await Promise.all(
+      followerObjects.map(async (following) => {
+        const listCount = await Collection.countDocuments({
+          userId: following.id,
+        });
+        return {
+          ...following.toJSON(),
+          listCount,
+        };
+      })
+    );
+
+    res.json({
+      succeeded: true,
+      followerObjects: followerObjectsWithListCount,
+    });
   } catch (error) {
     res.json({
       succeeded: false,
@@ -210,6 +249,7 @@ const getFollowers = async (req, res) => {
     });
   }
 };
+
 const getFollowings = async (req, res) => {
   try {
     const id = req.query.id !== undefined ? Number(req.query.id) : req.user.id;
@@ -217,9 +257,25 @@ const getFollowings = async (req, res) => {
     const followings = user.followings;
     const followingObjects = await User.find(
       { id: { $in: followings } },
-      { __v: 0, _id: 0, followers: 0, followings: 0, password: 0 }
+      { __v: 0, _id: 0, password: 0 }
     );
-    res.json({ succeeded: true, followingObjects });
+
+    const followingObjectsWithListCount = await Promise.all(
+      followingObjects.map(async (following) => {
+        const listCount = await Collection.countDocuments({
+          userId: following.id,
+        });
+        return {
+          ...following.toJSON(),
+          listCount,
+        };
+      })
+    );
+
+    res.json({
+      succeeded: true,
+      followingObjects: followingObjectsWithListCount,
+    });
   } catch (error) {
     res.json({
       succeeded: false,

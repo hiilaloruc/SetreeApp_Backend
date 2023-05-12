@@ -17,7 +17,7 @@ const collectionSchema = new Schema(
       type: String,
       required: true,
       default:
-        "https://images.pexels.com/photos/1933524/pexels-photo-1933524.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+        "https://images.pexels.com/photos/16719683/pexels-photo-16719683.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
     },
     status: {
       type: String,
