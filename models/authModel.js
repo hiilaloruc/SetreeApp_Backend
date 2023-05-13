@@ -78,6 +78,12 @@ userSchema.plugin(mongoose_autoinc.autoIncrement, {
 
 userSchema.pre("save", function (next) {
   const user = this;
+
+  //if no change on password do not hash again.
+  if (!user.isModified("password")) {
+    return next();
+  }
+
   bcrypt.hash(user.password, 12, (err, hash) => {
     user.password = hash;
     next();
