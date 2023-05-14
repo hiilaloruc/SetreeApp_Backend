@@ -175,6 +175,10 @@ const follow = async (req, res) => {
   try {
     //update the one who I followed
     let user = await User.findOne({ id: Number(req.params.id) });
+    if (user.followers.includes(req.user.id)) {
+      throw new Error("You already followed this user");
+    }
+
     user.followers.push(req.user.id);
     user.save();
 
@@ -207,6 +211,64 @@ const unfollow = async (req, res) => {
     res.json({
       succeeded: true,
       message: "Unfollow successfull.",
+    });
+  } catch (error) {
+    res.json({
+      succeeded: false,
+      error: error.message,
+    });
+  }
+};
+
+const likeACollection = async (req, res) => {
+  try {
+    const collectionId = Number(req.params.id);
+    let user = await User.findOne({ id: req.user.id });
+
+    if (user.likedCollections.includes(collectionId)) {
+      throw new Error("User already liked this collection");
+    }
+
+    user.likedCollections.push(collectionId);
+    user.save();
+
+    await Collection.updateOne(
+      { id: collectionId },
+      { $inc: { likeCount: 1 } }
+    );
+
+    res.json({
+      succeeded: true,
+      message: "Like successful.",
+    });
+  } catch (error) {
+    res.json({
+      succeeded: false,
+      error: error.message,
+    });
+  }
+};
+
+const dislikeACollection = async (req, res) => {
+  try {
+    const collectionId = Number(req.params.id);
+    let user = await User.findOne({ id: req.user.id });
+
+    if (!user.likedCollections.includes(collectionId)) {
+      throw new Error("User hasn't liked this collection yet.");
+    }
+
+    user.likedCollections.pull(collectionId);
+    user.save();
+
+    await Collection.updateOne(
+      { id: collectionId },
+      { $inc: { likeCount: -1 } }
+    );
+
+    res.json({
+      succeeded: true,
+      message: "Dislike successful.",
     });
   } catch (error) {
     res.json({
@@ -300,4 +362,6 @@ export {
   unfollow,
   getFollowers,
   getFollowings,
+  likeACollection,
+  dislikeACollection,
 };

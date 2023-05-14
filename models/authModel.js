@@ -63,6 +63,11 @@ const userSchema = new Schema(
         type: Number,
       },
     ],
+    likedCollections: [
+      {
+        type: Number,
+      },
+    ],
   },
   {
     timestamps: true, //mongodb automatically adds createdAt and updatedAt

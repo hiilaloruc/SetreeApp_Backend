@@ -14,6 +14,10 @@ const collectionSchema = new Schema(
       type: Number,
       default: 0,
     },
+    likeCount: {
+      type: Number,
+      default: 0,
+    },
     userId: {
       type: Number,
     },

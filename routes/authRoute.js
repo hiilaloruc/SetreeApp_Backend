@@ -21,4 +21,14 @@ router.get("/follow/:id", authMiddleware.auth, authController.follow);
 router.get("/unfollow/:id", authMiddleware.auth, authController.unfollow);
 router.get("/getFollowers", authMiddleware.auth, authController.getFollowers); // ?id=2  QUERY
 router.get("/getFollowings", authMiddleware.auth, authController.getFollowings); // ?id=2  QUERY
+router.get(
+  "/likeACollection/:id",
+  authMiddleware.auth,
+  authController.likeACollection
+);
+router.get(
+  "/dislikeACollection/:id",
+  authMiddleware.auth,
+  authController.dislikeACollection
+);
 export default router;
