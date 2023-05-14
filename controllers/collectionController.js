@@ -1,30 +1,48 @@
-/*
-GOAL RESPONSE
-{       
-  "title" : "Weekly"
-  "count" : "6",
-  "items" : [
-    "Visit your granmda",
-    "Go to a cinema with a friend",
-    "Explore a new technology",
-    "Call a random friend",
-    "Get a certificate from any field",
-    "Enroll a course - that you know nothing"
-  ],
-}
-*/
-
 import Collection from "../models/collectionModel.js";
+import Tag from "../models/tagModel.js";
 import CollectionItem from "../models/collectionItemModel.js";
 
 const createCollection = async (req, res) => {
   try {
-    const { title } = req.body;
+    const { title, tagReq, isPublic, imageUrl } = req.body;
     const { id } = req.user;
-    await Collection.create({
-      title, //title = title,
-      userId: id,
-    });
+
+    const image =
+      imageUrl ||
+      "https://images.pexels.com/photos/16719683/pexels-photo-16719683.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2";
+
+    if (tagReq) {
+      const tag = tagReq.toLowerCase();
+      const existingTag = await Tag.findOne({ title: tag });
+
+      const newCollection = await Collection.create({
+        title, //title = title,
+        isPublic,
+        userId: id,
+        tag,
+        imageUrl: image,
+      });
+
+      if (existingTag) {
+        existingTag.collectionIds.push(newCollection.id);
+        await existingTag.save();
+      } else {
+        const newTag = await Tag.create({
+          title: tag,
+        });
+
+        newTag.collectionIds.push(newCollection.id);
+        await newTag.save();
+      }
+    } else {
+      await Collection.create({
+        title, //title = title,
+        isPublic,
+        userId: id,
+        imageUrl: image,
+      });
+    }
+
     res.json({
       succeded: true,
       message: "Collection created successfully.",
@@ -130,6 +148,7 @@ const getCollectionDetail = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
+
     let collection = await Collection.aggregate([
       { $match: { id: parseInt(id), status: "active" } },
       { $project: { _id: 0, __v: 0 } },
@@ -144,6 +163,11 @@ const getCollectionDetail = async (req, res) => {
       },
     ]);
 
+    if (collection[0].userId !== userId) {
+      // increase viewCount of collection
+      await Collection.updateOne({ id }, { $inc: { viewCount: 1 } });
+    }
+
     if (collection[0].isPublic === true || collection[0].userId === userId) {
       res.json({
         succeded: true,
@@ -152,13 +176,31 @@ const getCollectionDetail = async (req, res) => {
     } else {
       res.json({
         succeded: false,
-        message: "Collection is not Found.",
+        message: "You are not allowed to see that collection.",
         collection: null,
       });
     }
   } catch (error) {
     res.json({
       succeded: false,
+      error,
+    });
+  }
+};
+
+const getCollectionsByTag = async (req, res) => {
+  try {
+    const collections = await Collection.find(
+      { tag: tag, isPublic: true },
+      { __v: 0, _id: 0 }
+    );
+    res.json({
+      success: true,
+      collections: collections,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
       error,
     });
   }
@@ -171,4 +213,5 @@ export {
   deleteCollection,
   getCollection,
   getCollectionDetail,
+  getCollectionsByTag,
 };

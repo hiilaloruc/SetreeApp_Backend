@@ -10,6 +10,10 @@ const collectionSchema = new Schema(
       required: true,
       trim: true,
     },
+    viewCount: {
+      type: Number,
+      default: 0,
+    },
     userId: {
       type: Number,
     },
@@ -27,6 +31,9 @@ const collectionSchema = new Schema(
     isPublic: {
       type: Boolean,
       default: true,
+    },
+    tag: {
+      type: String,
     },
   },
   {

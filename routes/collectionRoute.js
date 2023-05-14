@@ -10,6 +10,10 @@ router.get("/getCollections/:id", collectionController.getCollections);
 router.get("/getCollection/:id", collectionController.getCollection);
 router.post("/updateCollection", collectionController.updateCollection);
 router.post("/deleteCollection", collectionController.deleteCollection);
+router.post(
+  "/getCollectionsByTag/:tag",
+  collectionController.getCollectionsByTag
+);
 router.get(
   "/getCollectionDetail/:id",
   collectionController.getCollectionDetail
