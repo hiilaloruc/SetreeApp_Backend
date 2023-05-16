@@ -16,6 +16,30 @@ const createGoalItem = async (req, res) => {
     });
   }
 };
+
+const createMultipleGoalItems = async (req, res) => {
+  try {
+    const { itemArray, goalId } = req.body;
+
+    const createdItems = await Promise.all(
+      itemArray.map(async (content) => {
+        const goalItem = await GoalItem.create({ content, goalId });
+        return goalItem;
+      })
+    );
+
+    res.json({
+      succeeded: true,
+      message: "Goal Items created successfully.",
+    });
+  } catch (error) {
+    res.json({
+      succeeded: false,
+      error,
+    });
+  }
+};
+
 const getGoalItem = async (req, res) => {
   try {
     const { id } = req.params;
@@ -100,4 +124,5 @@ export {
   getItemsByGoal,
   createGoalItem,
   getGoalItem,
+  createMultipleGoalItems,
 };

@@ -6,6 +6,10 @@ const router = express.Router();
 
 router.use(authMiddleware.auth);
 router.post("/createGoalItem", goalItemController.createGoalItem);
+router.post(
+  "/createMultipleGoalItems",
+  goalItemController.createMultipleGoalItems
+);
 router.get("/getGoalItem/:id", goalItemController.getGoalItem);
 router.get("/getItemsByGoal/:goalId", goalItemController.getItemsByGoal); // GET ALL
 router.post("/updateGoalItem", goalItemController.updateGoalItem);
