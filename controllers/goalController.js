@@ -41,7 +41,9 @@ const getGoals = async (req, res) => {
   try {
     const { id } = req.user;
     const filter = { userId: id, status: "active" };
-    const goals = await Goal.find(filter, { __v: 0, _id: 0 });
+    const goals = await Goal.find(filter, { __v: 0, _id: 0 }).sort({
+      createdAt: -1,
+    });
 
     res.json({
       succeeded: true,
@@ -117,7 +119,10 @@ const getGoalDetail = async (req, res) => {
           from: "goalitems",
           foreignField: "goalId",
           localField: "id",
-          pipeline: [{ $project: { content: 1, isDone: 1, id: 1, _id: 0 } }],
+          pipeline: [
+            { $project: { content: 1, isDone: 1, id: 1, _id: 0 } },
+            { $sort: { createdAt: -1 } },
+          ],
           as: "goalItems",
         },
       },

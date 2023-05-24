@@ -112,6 +112,35 @@ const updatePassword = async (req, res) => {
   }
 };
 
+const updateProfileImage = async (req, res) => {
+  try {
+    const { newUrl } = req.body;
+    const { id } = req.user;
+    const user = await User.findOne({ id });
+    user.imageUrl = newUrl;
+    await user.save();
+
+    const NewUser = await User.findOne({ id }, { __v: 0, _id: 0, password: 0 });
+    const publicCollectionsCount = await Collection.countDocuments({
+      userId: id,
+    });
+    const userModified = {
+      ...NewUser.toJSON(),
+      listCount: publicCollectionsCount,
+    };
+
+    res.json({
+      succeeded: true,
+      user: userModified,
+    });
+  } catch (error) {
+    res.json({
+      succeeded: false,
+      error: error.message,
+    });
+  }
+};
+
 const updateUser = async (req, res) => {
   try {
     const { firstName, lastName, username, email, gender } = req.body;
@@ -152,6 +181,7 @@ const getUser = async (req, res) => {
 
     const publicCollectionsCount = await Collection.countDocuments({
       userId: id,
+      status: "active",
     });
 
     const userModified = {
@@ -364,4 +394,5 @@ export {
   getFollowings,
   likeACollection,
   dislikeACollection,
+  updateProfileImage,
 };
