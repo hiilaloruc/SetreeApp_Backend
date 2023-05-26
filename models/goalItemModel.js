@@ -7,7 +7,6 @@ const goalItemSchema = new Schema(
     content: {
       type: String,
       required: true,
-      trim: true,
     },
     isDone: {
       type: Boolean,

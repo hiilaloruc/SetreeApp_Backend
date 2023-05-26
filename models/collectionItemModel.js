@@ -10,6 +10,11 @@ const collectionItemSchema = new Schema(
       required: true,
       trim: true,
     },
+    type: {
+      type: String,
+      enum: ["text", "title", "image"],
+      required: true,
+    },
     collectionId: {
       type: Number,
     },

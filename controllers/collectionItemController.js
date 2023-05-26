@@ -2,9 +2,10 @@ import CollectionItem from "../models/collectionItemModel.js";
 
 const createCollectionItem = async (req, res) => {
   try {
-    const { content, collectionId } = req.body;
+    const { content, type, collectionId } = req.body;
     const collectionItem = await CollectionItem.create({
       content,
+      type,
       collectionId,
     });
     res.json({
@@ -46,7 +47,7 @@ const getItemsByCollection = async (req, res) => {
     const collectionItems = await CollectionItem.find(
       { collectionId },
       { __v: 0, _id: 0 }
-    );
+    ).sort({ createdAt: 1 });
 
     res.json({
       succeeded: true,

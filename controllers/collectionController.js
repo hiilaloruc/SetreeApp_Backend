@@ -10,12 +10,12 @@ const createCollection = async (req, res) => {
     const image =
       imageUrl ||
       "https://images.pexels.com/photos/16719683/pexels-photo-16719683.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2";
-
+    let newCollection = "";
     if (tagReq) {
       const tag = tagReq.toLowerCase();
       const existingTag = await Tag.findOne({ title: tag });
 
-      const newCollection = await Collection.create({
+      newCollection = await Collection.create({
         title, //title = title,
         isPublic,
         userId: id,
@@ -35,7 +35,7 @@ const createCollection = async (req, res) => {
         await newTag.save();
       }
     } else {
-      await Collection.create({
+      newCollection = await Collection.create({
         title, //title = title,
         isPublic,
         userId: id,
@@ -43,9 +43,13 @@ const createCollection = async (req, res) => {
       });
     }
 
+    // _id ve __v parametrelerini gizleme
+    newCollection._id = undefined;
+    newCollection.__v = undefined;
     res.json({
       succeded: true,
       message: "Collection created successfully.",
+      collection: newCollection,
     });
   } catch (error) {
     res.json({
@@ -115,6 +119,12 @@ const deleteCollection = async (req, res) => {
     const { status, id } = req.body;
     const collections = await Collection.findOneAndUpdate({ id }, { status });
     await CollectionItem.deleteMany({ collectionId: id });
+
+    await Tag.updateMany(
+      { collectionIds: { $in: [id] } },
+      { $pull: { collectionIds: id } }
+    );
+
     res.json({
       succeded: true,
       message: "Collection is " + status + " now!",

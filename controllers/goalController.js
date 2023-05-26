@@ -21,13 +21,14 @@ const createGoal = async (req, res) => {
   try {
     const { title } = req.body;
     const { id } = req.user;
-    await Goal.create({
+    const goal = await Goal.create({
       title, //title = title,
       userId: id,
     });
     res.json({
       succeded: true,
       message: "Goal created successfully.",
+      goal,
     });
   } catch (error) {
     res.json({
