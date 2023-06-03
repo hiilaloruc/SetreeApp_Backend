@@ -1,5 +1,6 @@
 import Tag from "../models/tagModel.js";
 import User from "../models/authModel.js";
+import Collection from "../models/collectionModel.js";
 
 const searchUsersAndTags = async (req, res) => {
   try {
@@ -16,7 +17,6 @@ const searchUsersAndTags = async (req, res) => {
     });
 
     const tags = await Tag.find({ title: regex });
-
     const usersWithListCount = await Promise.all(
       users.map(async (user) => {
         const publicCollectionsCount = await Collection.countDocuments({
