@@ -71,7 +71,9 @@ const getCollections = async (req, res) => {
     if (id != requestOwnerId) {
       filter.isPublic = true;
     }
-    const collections = await Collection.find(filter, { __v: 0, _id: 0 });
+    const collections = await Collection.find(filter, { __v: 0, _id: 0 })
+      .sort({ createdAt: -1 })
+      .exec();
     const collectionsWithCount = await Promise.all(
       collections.map(async (collection) => {
         const itemCount = await CollectionItem.countDocuments({
