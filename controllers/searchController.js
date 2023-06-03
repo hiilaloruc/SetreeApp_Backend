@@ -17,8 +17,22 @@ const searchUsersAndTags = async (req, res) => {
 
     const tags = await Tag.find({ title: regex });
 
+    const usersWithListCount = await Promise.all(
+      users.map(async (user) => {
+        const publicCollectionsCount = await Collection.countDocuments({
+          userId: user.id,
+        });
+
+        return {
+          ...user.toJSON(),
+          password: undefined,
+          listCount: publicCollectionsCount,
+        };
+      })
+    );
+
     const searchResults = {
-      users,
+      users: usersWithListCount,
       tags,
     };
 
