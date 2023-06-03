@@ -202,10 +202,14 @@ const getCollectionDetail = async (req, res) => {
 
 const getCollectionsByTag = async (req, res) => {
   try {
+    console.log("step 0");
+    const { tag } = req.params;
+    console.log("step 1");
     const collections = await Collection.find(
       { tag: tag, isPublic: true },
       { __v: 0, _id: 0 }
     );
+    console.log("step 2");
     res.json({
       success: true,
       collections: collections,

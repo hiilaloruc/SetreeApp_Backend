@@ -10,7 +10,7 @@ router.get("/getCollections/:id", collectionController.getCollections);
 router.get("/getCollection/:id", collectionController.getCollection);
 router.post("/updateCollection", collectionController.updateCollection);
 router.post("/deleteCollection", collectionController.deleteCollection);
-router.post(
+router.get(
   "/getCollectionsByTag/:tag",
   collectionController.getCollectionsByTag
 );

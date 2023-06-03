@@ -16,7 +16,12 @@ const searchUsersAndTags = async (req, res) => {
       ],
     });
 
-    const tags = await Tag.find({ title: regex });
+    const tags = await Tag.aggregate([
+      { $match: { title: regex } },
+      { $addFields: { collectionIdsCount: { $size: "$collectionIds" } } },
+      { $sort: { collectionIdsCount: -1 } },
+    ]);
+
     const usersWithListCount = await Promise.all(
       users.map(async (user) => {
         const publicCollectionsCount = await Collection.countDocuments({
