@@ -15,6 +15,11 @@ router.get(
   collectionController.getCollectionsByTag
 );
 router.get(
+  "/getLikedCollections/:id",
+  collectionController.getLikedCollections
+);
+
+router.get(
   "/getCollectionDetail/:id",
   collectionController.getCollectionDetail
 );

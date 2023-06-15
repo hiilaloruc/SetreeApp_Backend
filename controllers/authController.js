@@ -208,6 +208,9 @@ const follow = async (req, res) => {
     if (user.followers.includes(req.user.id)) {
       throw new Error("You already followed this user");
     }
+    if (req.user.id === req.params.id) {
+      throw new Error("You cannot follow yourself");
+    }
 
     user.followers.push(req.user.id);
     user.save();

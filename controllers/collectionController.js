@@ -1,6 +1,7 @@
 import Collection from "../models/collectionModel.js";
 import Tag from "../models/tagModel.js";
 import CollectionItem from "../models/collectionItemModel.js";
+import User from "../models/authModel.js";
 
 const createCollection = async (req, res) => {
   try {
@@ -202,14 +203,11 @@ const getCollectionDetail = async (req, res) => {
 
 const getCollectionsByTag = async (req, res) => {
   try {
-    console.log("step 0");
     const { tag } = req.params;
-    console.log("step 1");
     const collections = await Collection.find(
       { tag: tag, isPublic: true },
       { __v: 0, _id: 0 }
     );
-    console.log("step 2");
     res.json({
       success: true,
       collections: collections,
@@ -222,6 +220,26 @@ const getCollectionsByTag = async (req, res) => {
   }
 };
 
+const getLikedCollections = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findOne({ id });
+    const likedCollectionsArr = user.likedCollections;
+    const likedCollections = await Collection.find(
+      { id: { $in: likedCollectionsArr }, isPublic: true },
+      { __v: 0, _id: 0 }
+    );
+    res.json({
+      success: true,
+      collections: likedCollections,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      error,
+    });
+  }
+};
 export {
   createCollection,
   getCollections,
@@ -230,4 +248,5 @@ export {
   getCollection,
   getCollectionDetail,
   getCollectionsByTag,
+  getLikedCollections,
 };
