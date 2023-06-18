@@ -1,5 +1,8 @@
 import User from "../models/authModel.js";
 import Collection from "../models/collectionModel.js";
+import Goal from "../models/goalModel.js";
+import GoalItem from "../models/goalItemModel.js";
+
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -9,6 +12,62 @@ const createUser = async (req, res) => {
     console.log("User Create Request Body: ", req.body);
     const user = await User.create(req.body);
     //const userToken = await jwt.sign({ id: user.id }, process.env.SECRET_JWT, {   expiresIn: "1h"});
+
+    /* DEFAULT GOALS START */
+    const goalsTitleArr = ["Daily", "Weekly", "Monthly"];
+
+    const createdGoals = await Promise.all(
+      goalsTitleArr.map(async (title) => {
+        const goal = await Goal.create({
+          title,
+          userId: user.id,
+        });
+
+        let itemsForGoal;
+        switch (title) {
+          case "Daily":
+            itemsForGoal = [
+              "In morning, a 30-minute jog",
+              "Call mom to ask about plant.",
+              "Email Peter giving feedback",
+              "Take the dog for a walk",
+            ];
+            break;
+          case "Weekly":
+            itemsForGoal = [
+              "Read a chapter in a book",
+              "Do yoga three times this week",
+              "Find and cook a new and healthy recipe",
+              "Make and live by a budget this week",
+            ];
+            break;
+          case "Monthly":
+            itemsForGoal = [
+              "Go to concert at least 2 times",
+              "Reduce time spent on social media during work hours.",
+              "Catch up with an old friend",
+            ];
+            break;
+          default:
+            itemsForGoal = [];
+        }
+
+        const createdItems = await Promise.all(
+          itemsForGoal.map(async (content) => {
+            const goalItem = await GoalItem.create({
+              content,
+              goalId: goal.id,
+            });
+            return goalItem;
+          })
+        );
+
+        return { goal, items: createdItems };
+      })
+    );
+
+    /* DEFAULT GOALS END */
+
     const userWithoutSensitiveData = {
       ...user.toJSON(),
       password: undefined,
