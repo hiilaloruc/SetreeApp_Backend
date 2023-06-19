@@ -1,5 +1,6 @@
 import User from "../models/authModel.js";
 import Collection from "../models/collectionModel.js";
+import CollectionItem from "../models/collectionItemModel.js";
 import Goal from "../models/goalModel.js";
 import GoalItem from "../models/goalItemModel.js";
 
@@ -67,6 +68,56 @@ const createUser = async (req, res) => {
     );
 
     /* DEFAULT GOALS END */
+    /* DEFAULT COLLECTION START */
+    const collectionsTitleArray = ["My Collection"];
+
+    const createdCollections = await Promise.all(
+      collectionsTitleArray.map(async (title) => {
+        const collection = await Collection.create({
+          title,
+          userId: user.id,
+          isPublic: false,
+          imageUrl:
+            "https://cdn.shopify.com/s/files/1/0091/2782/1371/files/DSC05023.jpg?v=1633442502",
+        });
+
+        let itemsForCollection;
+
+        switch (title) {
+          case "My Collection":
+            itemsForCollection = [
+              [
+                "This is an example header",
+                "You can write here any text you like..",
+              ],
+            ];
+            break;
+          default:
+            itemsForCollection = [];
+        }
+        console.log("collection.id:", collection.id);
+        const createdItems = await Promise.all(
+          itemsForCollection.map(async (content) => {
+            const collectionTitle = await CollectionItem.create({
+              content: content[0],
+              type: "title",
+              collectionId: collection.id,
+            });
+            const collectionItem = await CollectionItem.create({
+              content: content[1],
+              type: "text",
+              collectionId: collection.id,
+            });
+
+            return [collectionTitle, collectionItem];
+          })
+        );
+
+        return { collection, items: createdItems };
+      })
+    );
+
+    /* DEFAULT COLLECTION END */
 
     const userWithoutSensitiveData = {
       ...user.toJSON(),
